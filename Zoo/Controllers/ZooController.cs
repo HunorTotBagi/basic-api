@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Zoo.DbContexts;
-using Zoo.Model;
+using Zoo.Entities;
+using Zoo.Services;
 
 namespace Zoo.Controllers
 {
@@ -8,24 +8,23 @@ namespace Zoo.Controllers
     [Route("api/animals")]
     public class ZooController : ControllerBase
     {
-        private readonly AnimalContext _context;
-
-        public ZooController(AnimalContext context)
+        private readonly IAnimalRepository _animalRepository;
+        public ZooController(IAnimalRepository animalRepository)
         {
-            _context = context;
+            _animalRepository = animalRepository;
         }
 
         [HttpGet]
-        public IActionResult GetItems()
+        public async Task<IActionResult> GetItems()
         {
-            var items = _context.Animals.ToList();
+            var items = await _animalRepository.GetAllAnimalsAsync();
             return Ok(items);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetItem(int id)
+        public async Task<IActionResult> GetItem(int id)
         {
-            var item = _context.Animals.Find(id);
+            var item = await _animalRepository.GetAnimalAsync(id);
 
             if (item == null)
                 return NotFound();
@@ -34,24 +33,22 @@ namespace Zoo.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateItem([FromBody] Animal item)
+        public async Task<IActionResult> CreateItem([FromBody] Animal item)
         {
-            _context.Animals.Add(item);
-            _context.SaveChanges();
+            await _animalRepository.CreateAnimalAsync(item);
 
             return CreatedAtAction(nameof(GetItem), new { id = item.Id }, item);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteItem(int id)
+        public async Task<IActionResult> DeleteItem(int id)
         {
-            var item = _context.Animals.Find(id);
+            var item = await _animalRepository.GetAnimalAsync(id);
 
             if (item == null)
                 return NotFound();
 
-            _context.Animals.Remove(item);
-            _context.SaveChanges();
+            await _animalRepository.DeleteAnimalAsync(item);
 
             return NoContent();
         }

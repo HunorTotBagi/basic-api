@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using Zoo.DbContexts;
+using Zoo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AnimalContext>(
     options => options.UseSqlite("Data Source=Animal.db"));
 // First addition
+
+// Second addition
+builder.Services.AddScoped<IAnimalRepository, AnimalRepository>();
+// Second addition
 
 
 var app = builder.Build();
