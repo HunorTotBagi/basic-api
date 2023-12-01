@@ -36,6 +36,5 @@ namespace Zoo.DbContexts
                 });
             base.OnModelCreating(modelBuilder);
         }
-
     }
 }
